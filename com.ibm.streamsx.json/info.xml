@@ -27,11 +27,10 @@ resulting stream using `com.ibm.streamsx.topology.topic::Publish`.
 An application implemented in Python (or any other language) may
 them subscribe to the stream of JSON objects.
 </info:description>
-    <info:version>1.4.5</info:version>
+    <info:version>1.4.6.__dev__</info:version>
     <info:requiredProductVersion>4.0.1</info:requiredProductVersion>
   </info:identity>
   <info:dependencies/>
-  
   <info:resources>
     <info:messageSet name="JSONResource">
       <info:lang default="true">en_US/JSONResource.xlf</info:lang>
@@ -47,6 +46,4 @@ them subscribe to the stream of JSON objects.
       <info:lang>zh_TW/JSONResource.xlf</info:lang>
     </info:messageSet>
   </info:resources>
-
 </info:toolkitInfoModel>
-

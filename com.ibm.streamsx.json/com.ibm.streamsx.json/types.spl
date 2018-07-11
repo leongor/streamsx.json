@@ -16,6 +16,11 @@ namespace com.ibm.streamsx.json;
 type Json = rstring jsonString;
 
 
+/**
+* Default enum type for indexing internal parsed JSON object.
+* The index connects parseJSON to queryJSON accordingly.
+* [parseJSON] and [queryJSON].
+*/
 public composite JsonIndex {
 	type
 		static type_1 = enum{_1};
@@ -40,6 +45,10 @@ public composite JsonIndex {
 		static type_20 = enum{_20};
 }
 
+/**
+* The enum type to represent the parsing status.
+* [parseJSON].
+*/
 public composite JsonParseStatus {
 	type
 		static status = enum{PARSED, DOCUMENT_EMPTY, MULTIPLE_ROOTS, VALUE_INVALID, KEY_MISSING, COLON_MISSING,
@@ -49,8 +58,33 @@ public composite JsonParseStatus {
 							 NUMBER_TOO_BIG, NUMBER_MISS_FRACTION, NUMBER_MISS_EXPONENT, TERMINATION, SYNTAX_ERROR};
 }
 
+/**
+* The enum type to represent the querying status.
+* [queryJSON].
+*/
 public composite JsonStatus {
 	type
 		static status = enum{FOUND, FOUND_CAST, FOUND_WRONG_TYPE, FOUND_NULL, NOT_FOUND,
 							 PATH_MUST_BEGIN_WITH_SLASH, INVALID_ESCAPE, INVALID_PERCENT_ENCODING, CHAR_MUST_PERCENT_ENCODING};
+}
+
+/**
+* The tuple type to customize options for JSON formatting when using tupleToJSON, mapToJSON or toJSON functions.
+* keysToReplace: change attribute names to JSON field names accordingly - {"spl_attribute_name" : "json-field-name"}.
+* prefixToIgnore: ignore attribute names prefix to handle reserved keywords.
+* maxFractionSize: format binary floats (float32/64) nicely, default size is 6.
+* stripRoundFloats: cut the fraction part ('.0') for round floating point numbers, default is false.
+* tsFormat: similar to strftime, for more details here: https://www.boost.org/doc/libs/1_55_0/doc/html/date_time/date_time_io.html#date_time.format_flags
+* tsFormat: if empty, ctime function called (using local TZ).
+* tsUTC: format timestamps in UTC (used in conjunction with tsFormat), default is false.
+* [setFormatOptions].
+*/
+public composite JsonFormatOptions {
+	type
+		static options = tuple< map<rstring,rstring> keysToReplace,
+								rstring prefixToIgnore,
+								uint32 maxFractionSize,
+								boolean stripRoundFloats,
+								rstring tsFormat,
+								boolean tsUTC>;
 }
