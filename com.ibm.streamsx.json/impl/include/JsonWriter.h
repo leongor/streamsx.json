@@ -88,6 +88,18 @@ namespace com { namespace ibm { namespace streamsx { namespace json {
 		return (dotPos != std::string::npos) ? dotPos : valueStr.size();
 	}
 
+	inline std::string formatTS(timestamp const& value, FormatOptions const& options) {
+		std::stringstream stream;
+		stream.imbue(std::locale(std::locale::classic(), new time_facet(options.tsFormat.c_str()))); // time_facet pointer is managed by std::locale::facet
+		const ptime dateTime( ptime( from_time_t(value.getSeconds())) + microseconds(value.getNanoseconds() / 1000));
+		if(options.tsUTC)
+			stream << dateTime << 'Z';
+		else
+			stream << cLocalAdjustor::utc_to_local(dateTime);
+
+		return stream.str();
+	}
+
 	template<typename Container, typename Iterator>
 	inline void writeArray(Writer<StringBuffer> & writer, ConstValueHandle const& valueHandle, FormatOptions const& options);
 
@@ -297,21 +309,10 @@ namespace com { namespace ibm { namespace streamsx { namespace json {
 			}
 			case Meta::Type::TIMESTAMP : {
 				const timestamp & value = valueHandle;
-
-				if(options.tsFormat.empty()) {
-					writer.String(convToChars(Functions::Time::ctime(value)));
-				}
-				else {
-					std::stringstream stream;
-					stream.imbue(std::locale(std::locale::classic(), new time_facet(options.tsFormat.c_str()))); // time_facet pointer is managed by std::locale::facet
-					const ptime dateTime( ptime( from_time_t(value.getSeconds())) + microseconds(value.getNanoseconds() / 1000));
-					if(options.tsUTC)
-						stream << dateTime << 'Z';
-					else
-						stream << cLocalAdjustor::utc_to_local(dateTime);
-
-					writer.String(convToChars(stream.str()));
-				}
+				if(options.tsFormat.empty())
+					writer.String(convToChars( Functions::Time::ctime(value)));
+				else
+					writer.String(convToChars( formatTS(value, options)));
 				break;
 			}
 			case Meta::Type::BSTRING :
